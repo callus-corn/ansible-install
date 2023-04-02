@@ -9,10 +9,29 @@
       dnf:
         name: '*'
         state: latest
+      when: ansible_os_family == "Rocky"
 
     - name: dnf install
       dnf:
         name: "{{ item.packages }}"
         state: latest
       loop: "{{ install_group_packages_list }}"
-      when: "{{ item.group in group_names }}"
+      when:
+        - item.group in group_names
+        - ansible_os_family == "Rocky"
+
+    - name: apt upgrade
+      apt:
+        name: '*'
+        state: latest
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: apt install
+      apt:
+        name: "{{ item.packages }}"
+        state: latest
+      loop: "{{ install_group_packages_list }}"
+      when:
+        - item.group in group_names
+        - ansible_os_family == "Debian"
